@@ -28,4 +28,9 @@ public class RentalsController {
     private Mono<Listing> createListing(@RequestBody ListingModel listingModel) {
         return listingService.createListing(listingModel);
     }
+
+    @GetMapping("listings/search")
+    private Flux<Listing> searchListings(@RequestParam("query") String query) {
+        return listingService.searchListings(query);
+    }
 }

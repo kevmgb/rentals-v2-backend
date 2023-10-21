@@ -32,4 +32,9 @@ public class ListingServiceImpl implements ListingService {
         listing.setBaths(listingModel.getBaths());
         return listingRepository.save(listing);
     }
+
+    @Override
+    public Flux<Listing> searchListings(String query) {
+        return listingRepository.searchListings(query);
+    }
 }

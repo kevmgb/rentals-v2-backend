@@ -11,4 +11,6 @@ public interface ListingService {
     Mono<Listing> getListingById(int id);
 
     Mono<Listing> createListing(ListingModel listingModel);
+
+    Flux<Listing> searchListings(String query);
 }
