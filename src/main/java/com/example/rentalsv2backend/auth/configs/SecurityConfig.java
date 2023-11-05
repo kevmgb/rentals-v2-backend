@@ -2,16 +2,23 @@ package com.example.rentalsv2backend.auth.configs;
 
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
+import org.springframework.http.HttpMethod;
 import org.springframework.security.config.annotation.web.reactive.EnableWebFluxSecurity;
 import org.springframework.security.config.web.server.ServerHttpSecurity;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.security.web.server.SecurityWebFilterChain;
+import org.springframework.web.cors.CorsConfiguration;
+import org.springframework.web.cors.reactive.CorsConfigurationSource;
+import org.springframework.web.cors.reactive.CorsWebFilter;
+import org.springframework.web.cors.reactive.UrlBasedCorsConfigurationSource;
+
+import java.util.Arrays;
 
 @EnableWebFluxSecurity
 @Configuration
 public class SecurityConfig {
-
+    private static final String FRONTEND_LOCALHOST = "http://localhost:4200";
     private static final String[] PUBLIC = {"/", "/favicon.ico",
             "/actuator/health", "/api/v1/login", "/api/v1/register" ,
             "/api/v1/listing/{id}", "/api/v1/listings", "/api/v1/listings/search"};
@@ -39,5 +46,35 @@ public class SecurityConfig {
                         .pathMatchers(PUBLIC).permitAll()
                                 .anyExchange().authenticated())
                 .build();
+    }
+
+//    @Bean
+//    CorsConfigurationSource corsConfiguration() {
+//        CorsConfiguration corsConfig = new CorsConfiguration();
+//        corsConfig.applyPermitDefaultValues();
+//        corsConfig.addAllowedMethod(HttpMethod.POST);
+//        corsConfig.addAllowedMethod(HttpMethod.GET);
+//        corsConfig.addAllowedMethod(HttpMethod.PUT);
+//        corsConfig.addAllowedMethod(HttpMethod.DELETE);
+//        corsConfig.setAllowedOrigins(Arrays.asList(FRONTEND_LOCALHOST));
+//
+//        UrlBasedCorsConfigurationSource source =
+//                new UrlBasedCorsConfigurationSource();
+//        source.registerCorsConfiguration("/**", corsConfig);
+//        return source;
+//    }
+
+    @Bean
+    public CorsWebFilter corsWebFilter() {
+        CorsConfiguration corsConfig = new CorsConfiguration();
+        // TODO: Change this
+        corsConfig.addAllowedOrigin("*"); // Allow all origins for now
+        corsConfig.addAllowedMethod("*"); // Allow all HTTP methods (GET, POST, PUT, DELETE, etc.)
+        corsConfig.addAllowedHeader("*"); // Allow all headers
+
+        UrlBasedCorsConfigurationSource source = new UrlBasedCorsConfigurationSource();
+        source.registerCorsConfiguration("/**", corsConfig);
+
+        return new CorsWebFilter(source);
     }
 }
