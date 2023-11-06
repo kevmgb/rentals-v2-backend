@@ -4,18 +4,20 @@ import com.example.rentalsv2backend.auth.configs.Tokenizer;
 import com.example.rentalsv2backend.auth.exception.AnonymousException;
 import com.example.rentalsv2backend.auth.models.LoginRequest;
 import com.example.rentalsv2backend.auth.models.RegisterRequest;
+import com.example.rentalsv2backend.entity.Listing;
 import com.example.rentalsv2backend.entity.User;
+import com.example.rentalsv2backend.entity.UserVerificationToken;
 import com.example.rentalsv2backend.repository.UserRepository;
+import com.example.rentalsv2backend.repository.UserSignupTokenRepository;
 import lombok.extern.log4j.Log4j2;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.crypto.password.PasswordEncoder;
-import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.RequestBody;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.*;
 import reactor.core.publisher.Mono;
 
+import java.time.LocalDateTime;
+import java.util.UUID;
 import java.util.function.Function;
 
 @Log4j2
@@ -26,12 +28,13 @@ public class LoginSignup {
     private final Tokenizer tokenizer;
 
     private final UserRepository userRepository;
-
+    private final UserSignupTokenRepository userSignupTokenRepository;
     private final PasswordEncoder passwordEncoder;
 
-    public LoginSignup(Tokenizer tokenizer, UserRepository userRepository, PasswordEncoder passwordEncoder) {
+    public LoginSignup(Tokenizer tokenizer, UserRepository userRepository, UserSignupTokenRepository userSignupTokenRepository, PasswordEncoder passwordEncoder) {
         this.tokenizer = tokenizer;
         this.userRepository = userRepository;
+        this.userSignupTokenRepository = userSignupTokenRepository;
         this.passwordEncoder = passwordEncoder;
     }
 
@@ -42,6 +45,7 @@ public class LoginSignup {
 
                 // match password
                 .filter(user -> passwordEncoder.matches(request.getPassword(), user.getPassword()))
+                .filter(user -> user.getActive().equals(Boolean.TRUE))
 
                 // transform to user id
                 .map(User::getId)
@@ -87,7 +91,16 @@ public class LoginSignup {
                     entity.setPassword(passwordEncoder.encode(request.getPassword()));
 
                     // save entity, any error will be handled in onErrorResume
-                    return userRepository.save(entity);
+                    Mono<User> userMono = userRepository.save(entity);
+
+                    return userMono.flatMap(savedUser -> {
+                        UserVerificationToken userVerificationToken = new UserVerificationToken();
+                        userVerificationToken.setUserId(savedUser.getId());
+                        userVerificationToken.setToken(String.valueOf(UUID.randomUUID()));
+                        userVerificationToken.setExpiry(LocalDateTime.now().plusDays(1));
+                        return userSignupTokenRepository.save(userVerificationToken)
+                                .thenReturn(savedUser);
+                    });
                 })
 
                 // in case that we can save User, return HTTP 201
@@ -104,5 +117,10 @@ public class LoginSignup {
 
                 // handle any other exception like SQLException and Bad SQL Grammar Exception
                 .onErrorResume(Mono::error);
+    }
+
+    @GetMapping("/token/verify/{id}")
+    private Mono<Listing> getListingById(@PathVariable("token") String token) {
+        return null;
     }
 }

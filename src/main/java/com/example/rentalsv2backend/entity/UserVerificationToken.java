@@ -5,26 +5,25 @@ import org.springframework.data.annotation.Id;
 import org.springframework.data.relational.core.mapping.Column;
 import org.springframework.data.relational.core.mapping.Table;
 
+import java.time.LocalDateTime;
+
 @NoArgsConstructor
 @AllArgsConstructor
 @Getter
 @Setter
 @ToString
-@Table("m_user")
-public class User {
+@Table("user_signup_token")
+public class UserVerificationToken {
     @Id
     @Column("id")
     private Long id;
 
-    @Column("email")
-    private String email;
+    @Column("user_id")
+    private Long userId;
 
-    @Column("password")
-    private String password;
+    @Column("token")
+    private String token;
 
-    @Column("name")
-    private String name;
-
-    @Column("active")
-    private Boolean active;
+    @Column("expiry_time")
+    private LocalDateTime expiry;
 }
