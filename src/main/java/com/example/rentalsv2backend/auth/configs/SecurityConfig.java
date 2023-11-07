@@ -43,26 +43,10 @@ public class SecurityConfig {
                 .httpBasic(httpBasicSpec -> httpBasicSpec.disable())
                 .securityContextRepository(securityContextRepository)
                 .authorizeExchange(authorizeExchangeSpec -> authorizeExchangeSpec
-                        .pathMatchers(PUBLIC).permitAll()
+                        .pathMatchers(PUBLIC).permitAll().pathMatchers(HttpMethod.OPTIONS).permitAll()
                                 .anyExchange().authenticated())
                 .build();
     }
-
-//    @Bean
-//    CorsConfigurationSource corsConfiguration() {
-//        CorsConfiguration corsConfig = new CorsConfiguration();
-//        corsConfig.applyPermitDefaultValues();
-//        corsConfig.addAllowedMethod(HttpMethod.POST);
-//        corsConfig.addAllowedMethod(HttpMethod.GET);
-//        corsConfig.addAllowedMethod(HttpMethod.PUT);
-//        corsConfig.addAllowedMethod(HttpMethod.DELETE);
-//        corsConfig.setAllowedOrigins(Arrays.asList(FRONTEND_LOCALHOST));
-//
-//        UrlBasedCorsConfigurationSource source =
-//                new UrlBasedCorsConfigurationSource();
-//        source.registerCorsConfiguration("/**", corsConfig);
-//        return source;
-//    }
 
     @Bean
     public CorsWebFilter corsWebFilter() {

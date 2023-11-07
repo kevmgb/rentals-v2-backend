@@ -34,6 +34,10 @@ public class RentalsController {
         String token = headers.get("Authorization").substring(7);
         DecodedJWT jwt = JWT.decode(token);
         int userId = Integer.parseInt(jwt.getClaim("userId").asString());
+
+        System.out.println(token);
+        System.out.println(userId);
+
         return listingService.createListing(listingModel, userId);
     }
 
