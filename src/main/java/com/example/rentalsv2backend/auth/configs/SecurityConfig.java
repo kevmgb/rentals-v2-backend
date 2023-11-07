@@ -21,7 +21,7 @@ public class SecurityConfig {
     private static final String FRONTEND_LOCALHOST = "http://localhost:4200";
     private static final String[] PUBLIC = {"/", "/favicon.ico",
             "/actuator/health", "/api/v1/login", "/api/v1/register" ,
-            "/api/v1/listing/{id}", "/api/v1/listings", "/api/v1/listings/search"};
+            "/api/v1/listing/{id}", "/api/v1/listings", "/api/v1/listings/search", "/api/v1/token/verify/{token}"};
 
     private final TokenSecurityContextRepository securityContextRepository;
 

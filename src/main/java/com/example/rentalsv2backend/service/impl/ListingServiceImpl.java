@@ -20,13 +20,11 @@ public class ListingServiceImpl implements ListingService {
 
     @Override
     public Flux<Listing> getListings() {
-        log.info("Getting all listings======");
         return listingRepository.findAll();
     }
 
     @Override
     public Mono<Listing> getListingById(int id) {
-        log.info(String.format("Getting listing with id: %s", id));
         return listingRepository.findById(id);
     }
 

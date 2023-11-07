@@ -12,11 +12,13 @@ import com.example.rentalsv2backend.repository.UserSignupTokenRepository;
 import lombok.extern.log4j.Log4j2;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.http.server.reactive.ServerHttpRequest;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.web.bind.annotation.*;
 import reactor.core.publisher.Mono;
 
 import java.time.LocalDateTime;
+import java.util.Map;
 import java.util.UUID;
 import java.util.function.Function;
 
@@ -119,8 +121,27 @@ public class LoginSignup {
                 .onErrorResume(Mono::error);
     }
 
-    @GetMapping("/token/verify/{id}")
-    private Mono<Listing> getListingById(@PathVariable("token") String token) {
-        return null;
+    @GetMapping("/token/verify/{token}")
+    private Mono<ResponseEntity<String>> verifyToken(@PathVariable("token") String token) {
+        return userSignupTokenRepository.findByToken(token)
+                .flatMap(signupToken -> {
+                    // Verify that token has not expired
+                    if (LocalDateTime.now().isAfter(signupToken.getExpiry())) {
+                        return Mono.just(ResponseEntity.status(HttpStatus.BAD_REQUEST).body("Verification token has expired"));
+                    }
+
+                    // Check if user exists
+                    return userRepository.findById(signupToken.getUserId())
+                            .flatMap(user -> {
+                                // Mark user as active
+                                if (user.getActive().equals(Boolean.TRUE)) {
+                                    return Mono.just(ResponseEntity.ok("User is already activated"));
+                                }
+                                user.setActive(Boolean.TRUE);
+                                return userRepository.save(user)
+                                        .thenReturn(ResponseEntity.ok("User has been successfully verified"));
+                            }).switchIfEmpty(Mono.just(ResponseEntity.status(HttpStatus.NOT_FOUND).body("User not found")));
+                })
+                .switchIfEmpty(Mono.just(ResponseEntity.status(HttpStatus.NOT_FOUND).body("Verification token not found")));
     }
 }
