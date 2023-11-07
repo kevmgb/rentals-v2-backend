@@ -3,6 +3,7 @@ package com.example.rentalsv2backend.controller;
 import com.auth0.jwt.JWT;
 import com.auth0.jwt.interfaces.DecodedJWT;
 import com.example.rentalsv2backend.entity.Listing;
+import com.example.rentalsv2backend.model.ListingDetailsModel;
 import com.example.rentalsv2backend.model.ListingModel;
 import com.example.rentalsv2backend.service.ListingService;
 import lombok.RequiredArgsConstructor;
@@ -25,7 +26,7 @@ public class RentalsController {
     }
 
     @GetMapping("/listing/{id}")
-    private Mono<Listing> getListingById(@PathVariable("id") int id) {
+    private Mono<ListingDetailsModel> getListingById(@PathVariable("id") int id) {
         return listingService.getListingById(id);
     }
 
