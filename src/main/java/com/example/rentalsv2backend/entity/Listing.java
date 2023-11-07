@@ -28,4 +28,7 @@ public class Listing {
 
     @Column("user_id")
     private int userId;
+
+    @Column("description")
+    private String description;
 }

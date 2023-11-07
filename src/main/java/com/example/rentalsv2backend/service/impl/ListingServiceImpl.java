@@ -35,6 +35,7 @@ public class ListingServiceImpl implements ListingService {
         listing.setBeds(listingModel.getBeds());
         listing.setBaths(listingModel.getBaths());
         listing.setUserId(userId);
+        listing.setDescription(listingModel.getDescription());
         return listingRepository.save(listing);
     }
 

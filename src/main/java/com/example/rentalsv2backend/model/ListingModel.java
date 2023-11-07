@@ -17,4 +17,7 @@ public class ListingModel {
 
     @JsonProperty("baths")
     private int baths;
+
+    @JsonProperty("description")
+    private String description;
 }
