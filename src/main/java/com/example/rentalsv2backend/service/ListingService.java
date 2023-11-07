@@ -10,7 +10,7 @@ public interface ListingService {
 
     Mono<Listing> getListingById(int id);
 
-    Mono<Listing> createListing(ListingModel listingModel);
+    Mono<Listing> createListing(ListingModel listingModel, int userId);
 
     Flux<Listing> searchListings(String query);
 }

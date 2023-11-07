@@ -32,7 +32,7 @@ public class Tokenizer {
 
                 .withIssuer(issuer)
 
-                .withClaim("principal", userId)
+                .withClaim("userId", userId)
 
                 .withClaim("role", "USER")
 

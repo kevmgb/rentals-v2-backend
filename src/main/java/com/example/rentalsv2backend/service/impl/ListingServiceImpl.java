@@ -29,11 +29,12 @@ public class ListingServiceImpl implements ListingService {
     }
 
     @Override
-    public Mono<Listing> createListing(ListingModel listingModel) {
+    public Mono<Listing> createListing(ListingModel listingModel, int userId) {
         Listing listing = new Listing();
         listing.setName(listingModel.getName());
         listing.setBeds(listingModel.getBeds());
         listing.setBaths(listingModel.getBaths());
+        listing.setUserId(userId);
         return listingRepository.save(listing);
     }
 

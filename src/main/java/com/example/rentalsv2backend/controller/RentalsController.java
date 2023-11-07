@@ -1,5 +1,7 @@
 package com.example.rentalsv2backend.controller;
 
+import com.auth0.jwt.JWT;
+import com.auth0.jwt.interfaces.DecodedJWT;
 import com.example.rentalsv2backend.entity.Listing;
 import com.example.rentalsv2backend.model.ListingModel;
 import com.example.rentalsv2backend.service.ListingService;
@@ -7,6 +9,9 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.web.bind.annotation.*;
 import reactor.core.publisher.Flux;
 import reactor.core.publisher.Mono;
+
+import java.util.Map;
+import java.util.Objects;
 
 @RestController
 @RequestMapping("/api/v1")
@@ -25,8 +30,11 @@ public class RentalsController {
     }
 
     @PostMapping("listing")
-    private Mono<Listing> createListing(@RequestBody ListingModel listingModel) {
-        return listingService.createListing(listingModel);
+    private Mono<Listing> createListing(@RequestHeader Map<String, String> headers, @RequestBody ListingModel listingModel) {
+        String token = headers.get("Authorization").substring(7);
+        DecodedJWT jwt = JWT.decode(token);
+        int userId = Integer.parseInt(jwt.getClaim("userId").asString());
+        return listingService.createListing(listingModel, userId);
     }
 
     @GetMapping("listings/search")

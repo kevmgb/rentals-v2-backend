@@ -25,4 +25,7 @@ public class Listing {
 
     @Column("baths")
     private int baths;
+
+    @Column("user_id")
+    private int userId;
 }
