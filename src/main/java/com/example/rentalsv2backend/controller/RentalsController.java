@@ -6,13 +6,13 @@ import com.example.rentalsv2backend.entity.Listing;
 import com.example.rentalsv2backend.model.ListingDetailsModel;
 import com.example.rentalsv2backend.model.ListingModel;
 import com.example.rentalsv2backend.service.ListingService;
+import com.example.rentalsv2backend.utils.Page;
 import lombok.RequiredArgsConstructor;
 import org.springframework.web.bind.annotation.*;
 import reactor.core.publisher.Flux;
 import reactor.core.publisher.Mono;
 
 import java.util.Map;
-import java.util.Objects;
 
 @RestController
 @RequestMapping("/api/v1")
@@ -21,8 +21,8 @@ public class RentalsController {
     private final ListingService listingService;
 
     @GetMapping("/listings")
-    private Flux<Listing> getListings() {
-        return listingService.getListings();
+    private Mono<Page<Listing>> getListings(@RequestParam int page, @RequestParam int size) {
+        return listingService.getListings(page, size);
     }
 
     @GetMapping("/listing/{id}")

@@ -6,10 +6,9 @@ import com.example.rentalsv2backend.model.ListingModel;
 import com.example.rentalsv2backend.repository.ListingRepository;
 import com.example.rentalsv2backend.repository.UserRepository;
 import com.example.rentalsv2backend.service.ListingService;
+import com.example.rentalsv2backend.utils.Page;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 import org.springframework.stereotype.Service;
 import reactor.core.publisher.Flux;
 import reactor.core.publisher.Mono;
@@ -20,9 +19,21 @@ import reactor.core.publisher.Mono;
 public class ListingServiceImpl implements ListingService {
     private final ListingRepository listingRepository;
     private final UserRepository userRepository;
+
     @Override
-    public Flux<Listing> getListings() {
-        return listingRepository.findAll();
+    public Mono<Page<Listing>> getListings(int page, int size) {
+        int offset = (page - 1) * size; // Calculate the offset based on page and size
+
+        return listingRepository.findAll()
+                .skip(offset) // Skip the first 'offset' elements
+                .take(size)   // Take 'size' elements after skipping
+                .collectList() // Collect the paginated list
+                .flatMap(list -> listingRepository.count() // Get the total count of items
+                        .map(totalElements -> {
+                            int totalPages = (int) Math.ceil((double) totalElements / size);
+                            return new Page<>(list, totalElements, totalPages, page, size);
+                        })
+                );
     }
 
     @Override
