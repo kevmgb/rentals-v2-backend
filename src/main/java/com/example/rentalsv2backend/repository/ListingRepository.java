@@ -11,4 +11,6 @@ public interface ListingRepository extends R2dbcRepository<Listing, Integer> {
 
     @Query("SELECT id, name, beds, baths FROM listings WHERE MATCH (name) AGAINST (:query IN NATURAL LANGUAGE MODE)")
     Flux<Listing> searchListings(String query);
+
+    Flux<Listing> findByUserId(int userId);
 }

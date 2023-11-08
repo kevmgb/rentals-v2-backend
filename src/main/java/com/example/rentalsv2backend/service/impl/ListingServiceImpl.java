@@ -68,4 +68,20 @@ public class ListingServiceImpl implements ListingService {
     public Flux<Listing> searchListings(String query) {
         return listingRepository.searchListings(query);
     }
+
+    @Override
+    public Mono<Page<Listing>> getUserListings(int page, int size, int userId) {
+        int offset = (page - 1) * size; // Calculate the offset based on page and size
+
+        return listingRepository.findByUserId(userId)
+                .skip(offset) // Skip the first 'offset' elements
+                .take(size)   // Take 'size' elements after skipping
+                .collectList() // Collect the paginated list
+                .flatMap(list -> listingRepository.findByUserId(userId).count() // Get the total count of items
+                        .map(totalElements -> {
+                            int totalPages = (int) Math.ceil((double) totalElements / size);
+                            return new Page<>(list, totalElements, totalPages, page, size);
+                        })
+                );
+    }
 }

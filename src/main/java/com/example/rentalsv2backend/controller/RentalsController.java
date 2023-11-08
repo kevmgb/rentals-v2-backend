@@ -46,4 +46,12 @@ public class RentalsController {
     private Flux<Listing> searchListings(@RequestParam("query") String query) {
         return listingService.searchListings(query);
     }
+
+    @GetMapping("user/listings")
+    private Mono<Page<Listing>> getUserListings(@RequestHeader Map<String, String> headers, @RequestParam int page, @RequestParam int size) {
+        String token = headers.get("Authorization").substring(7);
+        DecodedJWT jwt = JWT.decode(token);
+        int userId = Integer.parseInt(jwt.getClaim("userId").asString());
+        return listingService.getUserListings(page, size, userId);
+    }
 }

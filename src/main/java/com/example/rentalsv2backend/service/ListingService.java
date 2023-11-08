@@ -15,4 +15,6 @@ public interface ListingService {
     Mono<Listing> createListing(ListingModel listingModel, int userId);
 
     Flux<Listing> searchListings(String query);
+
+    Mono<Page<Listing>> getUserListings(int page, int size, int userId);
 }
