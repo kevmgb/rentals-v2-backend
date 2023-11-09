@@ -9,6 +9,8 @@ import com.example.rentalsv2backend.service.ListingService;
 import com.example.rentalsv2backend.utils.Page;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.http.HttpStatus;
+import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
 import reactor.core.publisher.Flux;
 import reactor.core.publisher.Mono;
@@ -83,5 +85,18 @@ public class ListingServiceImpl implements ListingService {
                             return new Page<>(list, totalElements, totalPages, page, size);
                         })
                 );
+    }
+
+    @Override
+    public Mono<ResponseEntity<String>> deleteListing(int userId, int listingId) {
+        return listingRepository.findById(listingId)
+                .flatMap(listing -> {
+                    if (listing.getUserId() != userId) {
+                        return Mono.just(ResponseEntity.status(HttpStatus.FORBIDDEN).body("You are not authorised to perform this action"));
+                    }
+                    return listingRepository
+                            .deleteById(listingId)
+                                    .then(Mono.just(ResponseEntity.ok("Listing deleted successfully")));
+                }).switchIfEmpty(Mono.just(ResponseEntity.status(HttpStatus.NOT_FOUND).body("Record not found")));
     }
 }

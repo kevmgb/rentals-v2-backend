@@ -8,6 +8,7 @@ import com.example.rentalsv2backend.model.ListingModel;
 import com.example.rentalsv2backend.service.ListingService;
 import com.example.rentalsv2backend.utils.Page;
 import lombok.RequiredArgsConstructor;
+import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 import reactor.core.publisher.Flux;
 import reactor.core.publisher.Mono;
@@ -54,4 +55,12 @@ public class RentalsController {
         int userId = Integer.parseInt(jwt.getClaim("userId").asString());
         return listingService.getUserListings(page, size, userId);
     }
-}
+
+    @DeleteMapping("listing/delete/{id}")
+    private Mono<ResponseEntity<String>> deleteListing(@RequestHeader Map<String, String> headers, @PathVariable("id") int listingId) {
+        String token = headers.get("Authorization").substring(7);
+        DecodedJWT jwt = JWT.decode(token);
+        int userId = Integer.parseInt(jwt.getClaim("userId").asString());
+        return listingService.deleteListing(userId, listingId);
+    }
+ }
