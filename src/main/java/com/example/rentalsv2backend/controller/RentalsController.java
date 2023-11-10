@@ -72,4 +72,12 @@ public class RentalsController {
         int userId = Integer.parseInt(jwt.getClaim("userId").asString());
         return listingService.getUserProfile(userId);
     }
+
+    @PutMapping("user")
+    private Mono<ResponseEntity<UserModel>>updateUserProfile(@RequestHeader Map<String, String> headers, @RequestBody UserModel user) {
+        String token = headers.get("Authorization").substring(7);
+        DecodedJWT jwt = JWT.decode(token);
+        int userId = Integer.parseInt(jwt.getClaim("userId").asString());
+        return listingService.updateUserProfile(userId, user);
+    }
  }

@@ -23,4 +23,6 @@ public interface ListingService {
     Mono<ResponseEntity<String>> deleteListing(int userId, int listingId);
 
     Mono<ResponseEntity<UserModel>> getUserProfile(int userId);
+
+    Mono<ResponseEntity<UserModel>> updateUserProfile(int userId, UserModel user);
 }

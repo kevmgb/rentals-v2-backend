@@ -107,4 +107,16 @@ public class ListingServiceImpl implements ListingService {
                 .flatMap(user -> Mono.just(ResponseEntity.ok(new UserModel(user.getName(), user.getEmail()))))
                 .switchIfEmpty(Mono.just(ResponseEntity.status(HttpStatus.NOT_FOUND).body(null)));
     }
+
+    @Override
+    public Mono<ResponseEntity<UserModel>> updateUserProfile(int userId, UserModel user) {
+        return userRepository.findById((long) userId)
+                .flatMap(existingUser -> {
+                    existingUser.setName(user.getName());
+                    return userRepository.save(existingUser)
+                            .map(savedUser -> ResponseEntity.ok(new UserModel(savedUser.getName(), savedUser.getEmail())));
+                })
+                .switchIfEmpty(Mono.just(ResponseEntity.status(HttpStatus.NOT_FOUND).body(null)));
+    }
+
 }
