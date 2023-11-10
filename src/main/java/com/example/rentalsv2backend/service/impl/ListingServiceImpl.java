@@ -3,6 +3,7 @@ package com.example.rentalsv2backend.service.impl;
 import com.example.rentalsv2backend.entity.Listing;
 import com.example.rentalsv2backend.model.ListingDetailsModel;
 import com.example.rentalsv2backend.model.ListingModel;
+import com.example.rentalsv2backend.model.UserModel;
 import com.example.rentalsv2backend.repository.ListingRepository;
 import com.example.rentalsv2backend.repository.UserRepository;
 import com.example.rentalsv2backend.service.ListingService;
@@ -98,5 +99,12 @@ public class ListingServiceImpl implements ListingService {
                             .deleteById(listingId)
                                     .then(Mono.just(ResponseEntity.ok("Listing deleted successfully")));
                 }).switchIfEmpty(Mono.just(ResponseEntity.status(HttpStatus.NOT_FOUND).body("Record not found")));
+    }
+
+    @Override
+    public Mono<ResponseEntity<UserModel>> getUserProfile(int userId) {
+        return userRepository.findById((long) userId)
+                .flatMap(user -> Mono.just(ResponseEntity.ok(new UserModel(user.getName(), user.getEmail()))))
+                .switchIfEmpty(Mono.just(ResponseEntity.status(HttpStatus.NOT_FOUND).body(null)));
     }
 }

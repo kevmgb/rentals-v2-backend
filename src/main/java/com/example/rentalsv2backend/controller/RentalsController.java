@@ -5,6 +5,7 @@ import com.auth0.jwt.interfaces.DecodedJWT;
 import com.example.rentalsv2backend.entity.Listing;
 import com.example.rentalsv2backend.model.ListingDetailsModel;
 import com.example.rentalsv2backend.model.ListingModel;
+import com.example.rentalsv2backend.model.UserModel;
 import com.example.rentalsv2backend.service.ListingService;
 import com.example.rentalsv2backend.utils.Page;
 import lombok.RequiredArgsConstructor;
@@ -62,5 +63,13 @@ public class RentalsController {
         DecodedJWT jwt = JWT.decode(token);
         int userId = Integer.parseInt(jwt.getClaim("userId").asString());
         return listingService.deleteListing(userId, listingId);
+    }
+
+    @GetMapping("user")
+    private Mono<ResponseEntity<UserModel>>getUserProfile(@RequestHeader Map<String, String> headers) {
+        String token = headers.get("Authorization").substring(7);
+        DecodedJWT jwt = JWT.decode(token);
+        int userId = Integer.parseInt(jwt.getClaim("userId").asString());
+        return listingService.getUserProfile(userId);
     }
  }
